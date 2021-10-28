@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://unpkg.com/vue"></script>
+    <script src="lessons.js"></script>
+    <link rel="stylesheet" type="text/css" href="styleSheet.css">
+    
+</head>
+
+<body>
+    <div id="app"> 
+        <ul>
+          <li v-for="lesson in lesson"> 
+                <img v-bind:src="lesson.image"> 
+                <h1>{{lesson.subject}}</h1>
+                <p>Campus: {{lesson.campus}}</p>
+                <p>Price: £{{lesson.price}}</p>
+                <p>Spaces: {{lesson.spaces}}</p>
+                <button id = "lesson.id" @click='addItem(lesson.id)' :disabled='!isAvailable'>Add Lesson</button>
+           </li>
+        </ul>
+    </div>
+</body>
+
+<script>
+  let app = new Vue({
+      el: '#app',
+      data: {
+        lesson: lessons,
+        cart: []
+      },
+      methods: {
+        addItem(){
+          if(this.lesson.spaces > 0){
+            this.lesson.spaces -= 1
+            this.cart.push(this.lesson.id)
+          }
+        }
+      },
+      computed: {
+        isAvailable(){
+          return this.lesson.spaces != 0
+        }
+      }
+  })  
+</script>
+</html>
