@@ -12,8 +12,8 @@
 
 <body>
     <div id="app"> 
-      <button v-if='countCart() > 0'>checkout: {{countCart}}</button>
-      <button v-else=''>checkout: {{countCart}}</button>
+      <button v-if='showCheckout == true'>checkout: {{countCart}}</button>
+      <button disabled="true" v-else>checkout: {{countCart}}</button>
         <ul>
           <li v-for="lesson in lesson"> 
                 <img v-bind:src="lesson.image"> 
@@ -32,6 +32,7 @@
       el: '#app',
       data: {
         lesson: lessons,
+        showCheckout: false,
         cart: []
       },
       methods: {
@@ -48,6 +49,11 @@
       },
       computed: {
         countCart(){
+          if (this.cart.length > 0){
+            this.showCheckout = true;
+          } else {
+            this.showCheckout = false;
+          }
           return this.cart.length;
         }
       }
