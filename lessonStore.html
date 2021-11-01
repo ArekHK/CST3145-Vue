@@ -12,6 +12,8 @@
 
 <body>
     <div id="app"> 
+      <button v-if='countCart() > 0'>checkout: {{countCart}}</button>
+      <button v-else=''>checkout: {{countCart}}</button>
         <ul>
           <li v-for="lesson in lesson"> 
                 <img v-bind:src="lesson.image"> 
@@ -19,7 +21,7 @@
                 <p>Campus: {{lesson.campus}}</p>
                 <p>Price: £{{lesson.price}}</p>
                 <p>Spaces: {{lesson.spaces}}</p>
-                <button id = "lesson.id" @click='addItem(lesson.id)' :disabled='!isAvailable'>Add Lesson</button>
+                <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>Add Lesson</button>
            </li>
         </ul>
     </div>
@@ -33,18 +35,23 @@
         cart: []
       },
       methods: {
-        addItem(){
-          if(this.lesson.spaces > 0){
-            this.lesson.spaces -= 1
-            this.cart.push(this.lesson.id)
+        addItem(lesson){
+          if(lesson.spaces > 0){
+            lesson.spaces -= 1
+            this.cart.push(lesson.id)
           }
-        }
+        },
+        countSpaces(lesson){
+          return lesson.spaces != 0
+
+          }
       },
       computed: {
-        isAvailable(){
-          return this.lesson.spaces != 0
+        countCart(){
+          return this.cart.length;
         }
       }
+
   })  
 </script>
 </html>
