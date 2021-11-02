@@ -1,3 +1,11 @@
+#controls{
+    float: left;
+    height: 1000px;
+}
+
+#lessonlist{
+    float: left;
+}
 ul {
     margin: 0 auto;
     text-align: center;

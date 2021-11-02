@@ -1,70 +1,144 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="https://unpkg.com/vue"></script>
-    <script src="lessons.js"></script>
-    <link rel="stylesheet" type="text/css" href="styleSheet.css">
-    
-</head>
+  <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Document</title>
+      <script src="https://unpkg.com/vue"></script>
+      <script src="lessons.js"></script>
+      <link rel="stylesheet" type="text/css" href="styleSheet.css">
+      
+  </head>
 
-<body>
+  <body>
     <div id="app"> 
-      <button v-if='showCheckout == true'>checkout: {{countCart}}</button>
-      <button disabled="true" v-else>checkout: {{countCart}}</button>
+
+      <div v-if="showCheckout != true">
+
+        <div>
+          <button v-if='showCart == true' @click="openCheckout()">Cart: {{countCart}}</button>
+          <button disabled="true" v-else>Cart: {{countCart}}</button>
+        </div> 
+    
+        <div id = "controls">
+          <br>
+          <form>
+            <input type="radio" id="subject" name="sort" value="subject" checked>
+              <label for="subject">Subject</label><br>
+              <input type="radio" id="location" name="sort" value="location">
+              <label for="location">Location</label><br>
+              <input type="radio" id="price" name="sort" value="price">
+              <label for="price">Price</label><br>
+              <input type="radio" id="avail" name="sort" value="availability">
+              <label for="avail">Availability</label><br>
+    
+            <br>
+    
+              <input type="radio" id="asc" name="order" value="asc" checked>
+              <label for="huey">Ascending</label><br>
+              <input type="radio" id="desc" name="order" value="desc">
+              <label for="huey">Descending</label><br>
+          </form>
+        </div>
+          
+        <div id = "lessonList">
+          <ul>
+            <li v-for="lesson in sortedPrice"> 
+              <img v-bind:src="lesson.image"> 
+              <h1>{{lesson.subject}}</h1>
+              <p>Campus: {{lesson.campus}}</p>
+              <p>Price: £{{lesson.price}}</p>
+              <p>Spaces: {{lesson.spaces}}</p>
+              <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>Add Lesson</button>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <div v-else>
+        <div>
+          <button v-if='showCart == true' @click="openCheckout()">Cart: {{countCart}}</button>
+          <button disabled="true" v-else>Cart: {{countCart}}</button>
+        </div>
+        
+        <br>
+
+        <div id = "controls">
+          <p>Please enter your details</p>
+          <label for="fname">Name</label>
+          <input type="fname" id="price">
+          <br>
+          <label for="avail">Phone Number</label>
+          <input type="field" id="avail">
+        </div>
+
         <ul>
-          <li v-for="lesson in sortedLessons"> 
-                <img v-bind:src="lesson.image"> 
-                <h1>{{lesson.subject}}</h1>
-                <p>Campus: {{lesson.campus}}</p>
-                <p>Price: £{{lesson.price}}</p>
-                <p>Spaces: {{lesson.spaces}}</p>
-                <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>Add Lesson</button>
-           </li>
+          <li v-for="lesson in cart"> 
+            <img v-bind:src="lesson.image"> 
+            <h1>{{lesson.subject}}</h1>
+            <p>Campus: {{lesson.campus}}</p>
+            <p>Price: £{{lesson.price}}</p>
+            <p>Spaces: {{lesson.spaces}}</p>
+            <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>-</button>
+          </li>
         </ul>
+
+        
+
+      </div> <!--closing tag for v-else of show product-->
     </div>
-</body>
+  </body>
 
-<script>
-  let app = new Vue({
-      el: '#app',
-      data: {
-        lesson: lessons,
-        showCheckout: false,
-        cart: []
-      },
-      methods: {
-        addItem(lesson){
-          if(lesson.spaces > 0){
-            lesson.spaces -= 1
-            this.cart.push(lesson.id)
-          }
+  <script>
+    let app = new Vue({
+        el: '#app',
+        data: {
+          lesson: lessons,
+          showCart: false,
+          showCheckout: false,
+          cart: []
         },
-        countSpaces(lesson){
-          return lesson.spaces != 0
+        methods: {
+          addItem(lesson){
+            if(lesson.spaces > 0){
+              lesson.spaces -= 1
+              this.cart.push(lesson)
+            }
+          },
+          countSpaces(lesson){
+            return lesson.spaces != 0
+          },
+          openCheckout(){
+            this.showCheckout = this.showCheckout ? false : true;
+          }
 
-          }
-      },
-      computed: {
-        countCart(){
-          if (this.cart.length > 0){
-            this.showCheckout = true;
-          } else {
-            this.showCheckout = false;
-          }
-          return this.cart.length;
         },
-        sortedLessons(){
-          function  compare(a, b){
-            if(a.price > b.rpice) return 1;
-            if(a.price < b.price) return -1;
-            return 0;
-          }
-          return lessons.sort(compare);
+        computed: {
+          countCart(){
+            if (this.cart.length > 0){
+              this.showCart = true;
+            } else {
+              this.showCart = false;
+              this.showCheckout = false;
+            }
+            return this.cart.length;
+          },
+          sortedPrice(sortedOrder){
+            function comparePrice(a, b){
+              if(a.price > b.rpice) return 1;
+              if(a.price < b.price) return -1;
+              return 0;
+            }
+            
+            function compareOrder(a, b){
+              if(a.subject.toLowerCase() < b.subject.toLowerCase()) return 1;
+                
+              if (a.subject.toLowerCase() > b.subject.toLowerCase()) return -1;
+              return 0;
+            }
+            return lessons.sort(comparePrice);
+          },
         }
-      }
-  })  
-</script>
+    })  
+  </script>
 </html>
