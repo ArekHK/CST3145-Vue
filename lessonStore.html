@@ -15,7 +15,7 @@
       <button v-if='showCheckout == true'>checkout: {{countCart}}</button>
       <button disabled="true" v-else>checkout: {{countCart}}</button>
         <ul>
-          <li v-for="lesson in lesson"> 
+          <li v-for="lesson in sortedLessons"> 
                 <img v-bind:src="lesson.image"> 
                 <h1>{{lesson.subject}}</h1>
                 <p>Campus: {{lesson.campus}}</p>
@@ -55,9 +55,16 @@
             this.showCheckout = false;
           }
           return this.cart.length;
+        },
+        sortedLessons(){
+          function  compare(a, b){
+            if(a.price > b.rpice) return 1;
+            if(a.price < b.price) return -1;
+            return 0;
+          }
+          return lessons.sort(compare);
         }
       }
-
   })  
 </script>
 </html>
