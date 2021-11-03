@@ -6,6 +6,7 @@
       <title>Document</title>
       <script src="https://unpkg.com/vue"></script>
       <script src="lessons.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
       <link rel="stylesheet" type="text/css" href="styleSheet.css">
       
   </head>
@@ -16,8 +17,8 @@
       <div v-if="showCheckout != true">
 
         <div>
-          <button v-if='showCart == true' @click="openCheckout()">Cart: {{countCart}}</button>
-          <button disabled="true" v-else>Cart: {{countCart}}</button>
+          <button v-if='showCart == true' @click="openCheckout()"><span class="fas fa-cart-plus"></span>Cart: {{countCart}}</button>
+          <button disabled="true" v-else><span class="fas fa-cart-plus"></span>Cart: {{countCart}}</button>
         </div> 
     
         <div id = "controls">
@@ -57,8 +58,8 @@
       </div>
       <div v-else>
         <div>
-          <button v-if='showCart == true' @click="openCheckout()">Cart: {{countCart}}</button>
-          <button disabled="true" v-else>Cart: {{countCart}}</button>
+          <button v-if='showCart == true' @click="openCheckout()"><span class="fas fa-cart-plus"></span>Cart: {{countCart}}</button>
+          <button disabled="true" v-else><span class="fas fa-cart-plus"></span>Cart: {{countCart}}</button>
         </div>
         
         <br>
