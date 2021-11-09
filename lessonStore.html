@@ -23,6 +23,8 @@
     
         <div id = "controls">
           <br>
+          <input class="searchLetter" placeholder="Type to search lessons" v-model="searchLetter" @change="searchLessons()">
+          <br>
           <form>
               <input type="radio" id="subject" name="sort" value="subject" v-model="sortLessons.attribute">
               <label for="subject">Subject</label><br>
@@ -41,18 +43,34 @@
               <label for="huey">Descending</label><br>
           </form>
         </div>
-          
+
         <div id = "lessonList">
-          <ul>
-            <li v-for="lesson in sortedPrice"> 
-              <img v-bind:src="lesson.image"> 
-              <h1>{{lesson.subject}}</h1>
-              <p>Campus: {{lesson.campus}}</p>
-              <p>Price: £{{lesson.price}}</p>
-              <p>Spaces: {{lesson.spaces}}</p>
-              <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>Add Lesson</button>
-            </li>
-          </ul>
+
+          <div v-if="searchLetter != ''">
+            <ul>
+              <li v-for="lesson in searchLessons()"> 
+                <img v-bind:src="lesson.image"> 
+                <h1>{{lesson.subject}}</h1>
+                <p>Campus: {{lesson.campus}}</p>
+                <p>Price: £{{lesson.price}}</p>
+                <p>Spaces: {{lesson.spaces}}</p>
+                <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>Add Lesson</button>
+              </li>
+            </ul>
+          </div>
+
+          <div v-else>
+            <ul>
+              <li v-for="lesson in sortedPrice"> 
+                <img v-bind:src="lesson.image"> 
+                <h1>{{lesson.subject}}</h1>
+                <p>Campus: {{lesson.campus}}</p>
+                <p>Price: £{{lesson.price}}</p>
+                <p>Spaces: {{lesson.spaces}}</p>
+                <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'>Add Lesson</button>
+              </li>
+            </ul>
+          </div>
         </div>
 
       </div>
@@ -83,7 +101,7 @@
             <p>Campus: {{lesson.campus}}</p>
             <p>Price: £{{lesson.price}}</p>
             <p>Spaces: {{lesson.spaces}}</p>
-            <button @click='removeItem(lesson.id)'>-</button>
+            <button @click='removeItem(lesson.id)'>Remove Lesson</button>
           </li>
         </ul>
 
@@ -98,6 +116,7 @@
           lesson: lessons,
           showCart: false,
           showCheckout: false,
+          searchLetter: '',
           cart: [],
           order: {
             firstName: '',
@@ -147,6 +166,21 @@
               }
             }
             return lessonDetails;
+          },
+          searchLessons(){
+            let matchedLessons = []
+            console.log(this.searchLetter);
+            
+            for(let _lesson of this.lesson){
+
+              console.log(_lesson.subject.toLowerCase().includes(this.searchLetter))
+                if (_lesson.subject.toLowerCase().includes(this.searchLetter.toLowerCase()) === true || _lesson.campus.toLowerCase().includes(this.searchLetter.toLowerCase()) === true){
+                    matchedLessons.push(_lesson)
+                }
+            }
+
+            return matchedLessons
+
           }
         },
         computed: {
@@ -205,7 +239,6 @@
               if(a.spaces < b.spaces) return -1;
               return 0;
             }
-
           },
           verifyDetails(){
             let onlyLetters = /^[a-zA-Z]+$/
@@ -215,7 +248,7 @@
               return true;
             } else
             return false;
-          }
+          },
         }
     })  
   </script>
