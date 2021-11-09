@@ -48,6 +48,12 @@ button{
     height:30px;
 }
 
+button[disabled]{
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+}
+
 li:hover{
      box-shadow: 0 4px 8px 0 rgba(31, 31, 31, 0.479), 0 6px 20px 0 rgb(144 142 142 / 90%)
 }
