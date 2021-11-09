@@ -24,20 +24,20 @@
         <div id = "controls">
           <br>
           <form>
-            <input type="radio" id="subject" name="sort" value="subject" checked>
+              <input type="radio" id="subject" name="sort" value="subject" v-model="sortLessons.attribute">
               <label for="subject">Subject</label><br>
-              <input type="radio" id="location" name="sort" value="location">
+              <input type="radio" id="location" name="sort" value="campus" v-model="sortLessons.attribute">
               <label for="location">Location</label><br>
-              <input type="radio" id="price" name="sort" value="price">
+              <input type="radio" id="price" name="sort" value="price" v-model="sortLessons.attribute">
               <label for="price">Price</label><br>
-              <input type="radio" id="avail" name="sort" value="availability">
+              <input type="radio" id="avail" name="sort" value="availability" v-model="sortLessons.attribute">
               <label for="avail">Availability</label><br>
     
             <br>
     
-              <input type="radio" id="asc" name="order" value="asc" checked>
+              <input type="radio" id="asc" name="order" value="asc" v-model="sortLessons.order">
               <label for="huey">Ascending</label><br>
-              <input type="radio" id="desc" name="order" value="desc">
+              <input type="radio" id="desc" name="order" value="desc" v-model="sortLessons.order">
               <label for="huey">Descending</label><br>
           </form>
         </div>
@@ -102,6 +102,10 @@
           order: {
             firstName: '',
             phoneNo: ''
+          },
+          sortLessons: {
+            attribute: 'subject',
+            order: 'asc'
           }
         },
         methods: {
@@ -132,12 +136,52 @@
             return this.cart.length;
           },
           sortedPrice(){
-            function comparePrice(a, b){
-              if(a.price > b.rpice) return 1;
+            let sortOrder = this.sortLessons.order
+            
+            if(this.sortLessons.attribute == "subject"){
+              lessons.sort(compareSubject);
+            } else if(this.sortLessons.attribute == "campus"){
+              lessons.sort(compareCampus);
+            } else if(this.sortLessons.attribute == "price"){
+              lessons.sort(comparePrice); 
+            } else {
+              lessons.sort(compareSpaces); 
+            }
+
+            if(this.sortLessons.order == "asc"){
+              return lessons
+            } else {
+              return lessons.reverse();
+            }
+
+            function compareSubject(a, b){
+              let x = a.subject.toLowerCase();
+              let y = b.subject.toLowerCase();
+              if (x < y) {return -1;}
+              if (x > y) {return 1;}
+              return 0;
+            }
+
+            function compareCampus(a, b){
+              let x = a.campus.toLowerCase();
+              let y = b.campus.toLowerCase();
+              if (x < y) {return -1;}
+              if (x > y) {return 1;}
+              return 0;
+            }
+
+            function comparePrice(a, b,){
+              if(a.price > b.price) return 1;
               if(a.price < b.price) return -1;
               return 0;
             }
-            return lessons.sort(comparePrice);
+
+            function compareSpaces(a, b,){
+              if(a.spaces > b.spaces) return 1;
+              if(a.spaces < b.spaces) return -1;
+              return 0;
+            }
+
           },
           verifyDetails(){
             let onlyLetters = /^[a-zA-Z]+$/
