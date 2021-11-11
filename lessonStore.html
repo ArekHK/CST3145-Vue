@@ -45,21 +45,6 @@
         </div>
 
         <div id = "lessonList">
-
-          <div v-if="searchLetter != ''">
-            <ul>
-              <li v-for="lesson in searchLessons()"> 
-                <img v-bind:src="lesson.image"> 
-                <h1>{{lesson.subject}}</h1>
-                <p>Campus: {{lesson.campus}}</p>
-                <p>Price: £{{lesson.price}}</p>
-                <p>Spaces: {{lesson.spaces}}</p>
-                <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'><span v-bind:class="lesson.icon"></span> Add Lesson</button>
-              </li>
-            </ul>
-          </div>
-
-          <div v-else>
             <ul>
               <li v-for="lesson in sortedPrice"> 
                 <img v-bind:src="lesson.image"> 
@@ -70,7 +55,6 @@
                 <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'><span v-bind:class="lesson.icon"></span> Add Lesson</button>
               </li>
             </ul>
-          </div>
         </div>
 
       </div>
@@ -83,15 +67,15 @@
         <br>
 
         <div id = "controls">
-          <form> 
+
             <p>Please enter your details</p>
             <label for="fname">Name</label><br>
             <input v-model="order.firstName"><br>
             <label for="avail">Phone Number</label><br>
             <input v-model="order.phoneNo"><br>
             <button @click='placeOrder()' :disabled='!verifyDetails'>Place Order</button>
-          </form>
-          
+
+
         </div>
 
         <ul>
@@ -115,6 +99,7 @@
           lesson: lessons,
           showCart: false,
           showCheckout: false,
+          orderComplete: false,
           searchLetter: '',
           cart: [],
           order: {
@@ -130,14 +115,14 @@
           addItem(lesson){
             if(lesson.spaces > 0){
               lesson.spaces -= 1
-              this.cart.push(lesson.id)
+              this.cart.push(lesson.id) //pushes id to the cart
             }
           },
           removeItem(id){
             for(let i = 0; i < this.cart.length; i++){
-              if(id === this.cart[i]){
-                this.cart.splice(i, 1);
-                break;
+              if(id === this.cart[i]){ //searches for the id that is in the cart to get the array index
+                this.cart.splice(i, 1); //removes the item from the cart using array index
+                break; //stops for loop
               }
             }
             for(let i = 0; i < this.lesson.length; i++){
@@ -146,15 +131,14 @@
               }
             }
           },
+          placeOrder(){
+            alert("Order has been placed!");
+          },
           countSpaces(lesson){
             return lesson.spaces != 0
           },
           openCheckout(){
             this.showCheckout = this.showCheckout ? false : true;
-          },
-          placeOrder(){
-            alert('Order Complete!');
-            return false;
           },
           getLessons(){
             let lessonDetails = []
@@ -167,49 +151,49 @@
             }
             return lessonDetails;
           },
-          searchLessons(){
-            let matchedLessons = []
-            console.log(this.searchLetter);
-            
-            for(let _lesson of this.lesson){
-
-              console.log(_lesson.subject.toLowerCase().includes(this.searchLetter))
-                if (_lesson.subject.toLowerCase().includes(this.searchLetter.toLowerCase()) === true || _lesson.campus.toLowerCase().includes(this.searchLetter.toLowerCase()) === true){
-                    matchedLessons.push(_lesson)
-                }
-            }
-
-            return matchedLessons
-
-          }
         },
         computed: {
-          countCart(){
+          countCart(){ //counts the total items in the cart
             if (this.cart.length > 0){
               this.showCart = true;
             } else {
-              this.showCart = false;
-              this.showCheckout = false;
+              this.showCart = false; //disables the showCart button
+              this.showCheckout = false; //disables the checkout
             }
             return this.cart.length;
           },
           sortedPrice(){
             let sortOrder = this.sortLessons.order
+            let data = lessons
+
+            if(this.searchLetter != ''){ //checks if the user has entered search information.
+              let matchedLessons = []
+              
+              for(let _lesson of this.lesson){ //goes through the array of lessons to look for objects
+
+                //below code checks if each letter is contained in the object, if not then it skips
+                  if (_lesson.subject.toLowerCase().includes(this.searchLetter.toLowerCase()) === true || _lesson.campus.toLowerCase().includes(this.searchLetter.toLowerCase()) === true){
+                      matchedLessons.push(_lesson) //pushes the data that matches criteria to an array of objects
+                  }
+              }
+              data = matchedLessons;
+            }
             
+            //sort the array based on the attribute selected
             if(this.sortLessons.attribute == "subject"){
-              lessons.sort(compareSubject);
+              data.sort(compareSubject);
             } else if(this.sortLessons.attribute == "campus"){
-              lessons.sort(compareCampus);
+              data.sort(compareCampus);
             } else if(this.sortLessons.attribute == "price"){
-              lessons.sort(comparePrice); 
+              data.sort(comparePrice); 
             } else {
-              lessons.sort(compareSpaces); 
+              data.sort(compareSpaces); 
             }
 
             if(this.sortLessons.order == "asc"){
-              return lessons
+              return data
             } else {
-              return lessons.reverse();
+              return data.reverse(); //reverse the array if the option to sort descending is selected
             }
 
             function compareSubject(a, b){
@@ -241,10 +225,10 @@
             }
           },
           verifyDetails(){
-            let onlyLetters = /^[a-zA-Z]+$/
+            let onlyLetters = /^[a-zA-Z]+$/ //regular expressions for checking account details
             let onlyNumbers = /^[0-9]*$/
 
-            if(this.order.phoneNo.length == 11 && onlyNumbers.test(this.order.phoneNo) == true && onlyLetters.test(this.order.firstName) == true){
+            if(this.order.phoneNo.length == 11 && onlyNumbers.test(this.order.phoneNo) == true && onlyLetters.test(this.order.firstName) == true){ //checks if all the data matches regex
               return true;
             } else
             return false;
