@@ -22,7 +22,7 @@
     
         <div id = "controls">
           <br>
-          <input class="searchLetter" placeholder="Type to search lessons" v-model="searchLetter">
+          <input class="searchLetter" placeholder="Type to search lessons" v-model="searchLetter" v-on:input="searchItem()">
           <br>
           <form>
               <input type="radio" id="topic" name="sort" value="topic" v-model="sortLessons.attribute">
@@ -35,7 +35,7 @@
               <label for="avail">Availability</label><br>
     
             <br>
-    
+
               <input type="radio" id="asc" name="order" value="asc" v-model="sortLessons.order">
               <label for="huey">Ascending</label><br>
               <input type="radio" id="desc" name="order" value="desc" v-model="sortLessons.order">
@@ -83,7 +83,7 @@
             <h1>{{lesson.topic}}</h1>
             <p>location: {{lesson.location}}</p>
             <p>Price: £{{lesson.price}}</p>
-            <button @click='removeItem(lesson.id)'><span v-bind:class="lesson.icon"></span> Remove Lesson</button>
+            <button @click='removeItem(lesson._id)'><span v-bind:class="lesson.icon"></span> Remove Lesson</button>
           </li>
         </ul>
 
@@ -115,7 +115,19 @@
           addItem(lesson){
             if(lesson.spaces > 0){
               lesson.spaces -= 1
-              this.cart.push(lesson.id) //pushes id to the cart
+              this.cart.push(lesson._id) //pushes id to the cart
+            }
+          },
+          searchItem(){
+            if(this.searchLetter != ''){ //checks if the user has entered search information.
+              fetch('https://cst3145-node-server.herokuapp.com/search/collection/lesson/' + this.searchLetter).then(
+              function (response) {
+                response.json().then(
+                  function (json) {
+                    console.log(json)
+                    app.searchLessons = json;
+                  });
+              });
             }
           },
           removeItem(id){
@@ -126,7 +138,7 @@
               }
             }
             for(let i = 0; i < this.lesson.length; i++){
-              if(id === this.lesson[i].id){
+              if(id === this.lesson[i]._id){
                 this.lesson[i].spaces += 1
               }
             }
@@ -144,7 +156,7 @@
             let lessonDetails = []
             for (let id of this.cart){
               for (let _lesson of this.lesson){
-                if(id === _lesson.id){
+                if(id === _lesson._id){
                   lessonDetails.push(_lesson)
                 }
               }
@@ -174,24 +186,11 @@
           },
           sortedPrice(){
             let sortOrder = this.sortLessons.order
-            let data = this.lesson
+            let data = this.lesson;
 
             if(this.searchLetter != ''){ //checks if the user has entered search information.
-              
-              fetch('https://cst3145-node-server.herokuapp.com/search/collection/lesson/' + this.searchLetter).then(
-              function (response) {
-                response.json().then(
-                  function (json) {
-                    console.log(json)
-                    app.searchLessons = json;
-                  });
-              });
-              
-              data = this.searchLessons;
-              console.log("REPEATING");
+              data = this.searchLessons
             }
-            
-            console.log("REPEATING2");
             
             //sort the array based on the attribute selected
             if(this.sortLessons.attribute == "topic"){
@@ -200,8 +199,10 @@
               data.sort(comparelocation);
             } else if(this.sortLessons.attribute == "price"){
               data.sort(comparePrice); 
-            } else {
+            } else if(this.sortLessons.attribute == "availability"){
               data.sort(compareSpaces); 
+            } else {
+              data.reverse();
             }
 
             if(this.sortLessons.order == "asc"){
