@@ -5,7 +5,6 @@
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Document</title>
       <script src="https://unpkg.com/vue"></script>
-      <script src="lessons.js"></script>
       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
       <link rel="stylesheet" type="text/css" href="styleSheet.css">
       
@@ -26,9 +25,9 @@
           <input class="searchLetter" placeholder="Type to search lessons" v-model="searchLetter" @change="searchLessons()">
           <br>
           <form>
-              <input type="radio" id="subject" name="sort" value="subject" v-model="sortLessons.attribute">
-              <label for="subject">Subject</label><br>
-              <input type="radio" id="location" name="sort" value="campus" v-model="sortLessons.attribute">
+              <input type="radio" id="topic" name="sort" value="topic" v-model="sortLessons.attribute">
+              <label for="topic">topic</label><br>
+              <input type="radio" id="location" name="sort" value="location" v-model="sortLessons.attribute">
               <label for="location">Location</label><br>
               <input type="radio" id="price" name="sort" value="price" v-model="sortLessons.attribute">
               <label for="price">Price</label><br>
@@ -48,8 +47,8 @@
             <ul>
               <li v-for="lesson in sortedPrice"> 
                 <img v-bind:src="lesson.image"> 
-                <h1>{{lesson.subject}}</h1>
-                <p>Campus: {{lesson.campus}}</p>
+                <h1>{{lesson.topic}}</h1>
+                <p>location: {{lesson.location}}</p>
                 <p>Price: £{{lesson.price}}</p>
                 <p>Spaces: {{lesson.spaces}}</p>
                 <button @click='addItem(lesson)' :disabled='!countSpaces(lesson)'><span v-bind:class="lesson.icon"></span> Add Lesson</button>
@@ -81,8 +80,8 @@
         <ul>
           <li v-for="lesson in getLessons()"> 
             <img v-bind:src="lesson.image"> 
-            <h1>{{lesson.subject}}</h1>
-            <p>Campus: {{lesson.campus}}</p>
+            <h1>{{lesson.topic}}</h1>
+            <p>location: {{lesson.location}}</p>
             <p>Price: £{{lesson.price}}</p>
             <button @click='removeItem(lesson.id)'><span v-bind:class="lesson.icon"></span> Remove Lesson</button>
           </li>
@@ -96,7 +95,7 @@
     let app = new Vue({
         el: '#app',
         data: {
-          lesson: lessons,
+          lesson: [],
           showCart: false,
           showCheckout: false,
           orderComplete: false,
@@ -107,7 +106,7 @@
             phoneNo: ''
           },
           sortLessons: {
-            attribute: 'subject',
+            attribute: 'topic',
             order: 'asc'
           }
         },
@@ -152,6 +151,16 @@
             return lessonDetails;
           },
         },
+        created: function(){
+        fetch('http://localhost:3000/collection/lesson').then(
+          function (response) {
+            response.json().then(
+              function (json) {
+                console.log(JSON.stringify(json));
+                app.lesson = json;
+              });
+          });
+        },
         computed: {
           countCart(){ //counts the total items in the cart
             if (this.cart.length > 0){
@@ -164,7 +173,7 @@
           },
           sortedPrice(){
             let sortOrder = this.sortLessons.order
-            let data = lessons
+            let data = this.lesson
 
             if(this.searchLetter != ''){ //checks if the user has entered search information.
               let matchedLessons = []
@@ -172,7 +181,7 @@
               for(let _lesson of this.lesson){ //goes through the array of lessons to look for objects
 
                 //below code checks if each letter is contained in the object, if not then it skips
-                  if (_lesson.subject.toLowerCase().includes(this.searchLetter.toLowerCase()) === true || _lesson.campus.toLowerCase().includes(this.searchLetter.toLowerCase()) === true){
+                  if (_lesson.topic.toLowerCase().includes(this.searchLetter.toLowerCase()) === true || _lesson.location.toLowerCase().includes(this.searchLetter.toLowerCase()) === true){
                       matchedLessons.push(_lesson) //pushes the data that matches criteria to an array of objects
                   }
               }
@@ -180,10 +189,10 @@
             }
             
             //sort the array based on the attribute selected
-            if(this.sortLessons.attribute == "subject"){
-              data.sort(compareSubject);
-            } else if(this.sortLessons.attribute == "campus"){
-              data.sort(compareCampus);
+            if(this.sortLessons.attribute == "topic"){
+              data.sort(comparetopic);
+            } else if(this.sortLessons.attribute == "location"){
+              data.sort(comparelocation);
             } else if(this.sortLessons.attribute == "price"){
               data.sort(comparePrice); 
             } else {
@@ -196,17 +205,17 @@
               return data.reverse(); //reverse the array if the option to sort descending is selected
             }
 
-            function compareSubject(a, b){
-              let x = a.subject.toLowerCase();
-              let y = b.subject.toLowerCase();
+            function comparetopic(a, b){
+              let x = a.topic.toLowerCase();
+              let y = b.topic.toLowerCase();
               if (x < y) {return -1;}
               if (x > y) {return 1;}
               return 0;
             }
 
-            function compareCampus(a, b){
-              let x = a.campus.toLowerCase();
-              let y = b.campus.toLowerCase();
+            function comparelocation(a, b){
+              let x = a.location.toLowerCase();
+              let y = b.location.toLowerCase();
               if (x < y) {return -1;}
               if (x > y) {return 1;}
               return 0;
