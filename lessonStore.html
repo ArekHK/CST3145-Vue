@@ -182,7 +182,8 @@
               function (response) {
                 response.json().then(
                   function (json) {
-                    app.matchedLessons = json;
+                    console.log(json);
+                    this.matchedLessons = json;
                   });
               });
 
