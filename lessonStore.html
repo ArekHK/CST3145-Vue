@@ -45,7 +45,7 @@
 
         <div id = "lessonList">
             <ul>
-              <li v-for="lesson in sortedPrice"> 
+              <li v-for="lesson in sorting"> 
                 <img v-bind:src="lesson.image"> 
                 <h1>{{lesson.topic}}</h1>
                 <p>location: {{lesson.location}}</p>
@@ -144,8 +144,8 @@
             }
           },
           placeOrder(){
-            const order = {name: 'Arek', phoneNumber: '12345678901'};
-            // set the url to your server and route
+            const order = {name: this.order.firstName, phoneNumber: this.order.phoneNo, lessonID: this.cart, orderedSpaces: this.cart.length};
+
             fetch('https://cst3145-node-server.herokuapp.com/collection/order', { 
               method: 'POST',
               headers: {
@@ -157,6 +157,34 @@
             .then(responseJSON => {
               console.log('Success:', responseJSON);
             });
+
+            for (let i = 0; i < this.cart.length; i++) {
+              for(let y = 0; y < this.lesson.length; y++){
+                if(this.cart[i] === this.lesson[y]._id){
+                  console.log("MATCH " + y + this.lesson[y].topic)
+                  updateSpaces = { "spaces": (this.lesson[y].spaces - 1) };
+                  fetch("https://cst3145-node-server.herokuapp.com/collection/lesson/" + this.cart[i], {
+                    method: "PUT", // set the HTTP method as 'PUT'
+                    headers: {
+                      "Content-Type": "application/json", // set the data type as JSON
+                    },
+                    body: JSON.stringify(updateSpaces), // need to stringify the JSON object
+                  });
+                }
+              }
+            }
+            
+            alert("Thank you for your purchase :)");
+            this.cart = [];
+
+            fetch('https://cst3145-node-server.herokuapp.com/search/collection/lesson').then(
+              function (response) {
+                response.json().then(
+                  function (json) {
+                    console.log(json)
+                    app.searchLessons = json;
+                  });
+              });
           },
           countSpaces(lesson){
             return lesson.spaces != 0
@@ -196,7 +224,7 @@
             }
             return this.cart.length;
           },
-          sortedPrice(){
+          sorting(){
             let sortOrder = this.sortLessons.order
             let data = this.lesson;
 
