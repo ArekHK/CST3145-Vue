@@ -178,13 +178,15 @@
             if(this.searchLetter != ''){ //checks if the user has entered search information.
               let matchedLessons = []
               
-              for(let _lesson of this.lesson){ //goes through the array of lessons to look for objects
+              fetch('https://cst3145-node-server.herokuapp.com/search/collection/lesson/' + this.searchLetter).then(
+              function (response) {
+                response.json().then(
+                  function (json) {
+                    console.log(JSON.stringify(json));
+                    matchedLessons = json;
+                  });
+              });
 
-                //below code checks if each letter is contained in the object, if not then it skips
-                  if (_lesson.topic.toLowerCase().includes(this.searchLetter.toLowerCase()) === true || _lesson.location.toLowerCase().includes(this.searchLetter.toLowerCase()) === true){
-                      matchedLessons.push(_lesson) //pushes the data that matches criteria to an array of objects
-                  }
-              }
               data = matchedLessons;
             }
             
