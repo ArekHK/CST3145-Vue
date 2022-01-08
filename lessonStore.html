@@ -96,6 +96,7 @@
         el: '#app',
         data: {
           lesson: [],
+          searchLessons: [],
           showCart: false,
           showCheckout: false,
           orderComplete: false,
@@ -176,18 +177,16 @@
             let data = this.lesson
 
             if(this.searchLetter != ''){ //checks if the user has entered search information.
-              let matchedLessons = []
               
               fetch('https://cst3145-node-server.herokuapp.com/search/collection/lesson/' + this.searchLetter).then(
               function (response) {
                 response.json().then(
                   function (json) {
-                    console.log(json);
-                    this.matchedLessons = json;
+                    console.log(json)
+                    app.searchLessons = json;
                   });
               });
-
-              data = matchedLessons;
+              data = this.searchLessons;
             }
             
             //sort the array based on the attribute selected
