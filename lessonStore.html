@@ -144,7 +144,19 @@
             }
           },
           placeOrder(){
-            alert("Order has been placed!");
+            const order = {name: 'Arek', phoneNumber: '12345678901'};
+            // set the url to your server and route
+            fetch('https://cst3145-node-server.herokuapp.com/collection/order', { 
+              method: 'POST',
+              headers: {
+              'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(order),
+            })
+            .then(response => response.json())
+            .then(responseJSON => {
+              console.log('Success:', responseJSON);
+            });
           },
           countSpaces(lesson){
             return lesson.spaces != 0
