@@ -164,11 +164,11 @@
                   console.log("MATCH " + y + this.lesson[y].topic)
                   updateSpaces = { "spaces": (this.lesson[y].spaces - 1) };
                   fetch("https://cst3145-node-server.herokuapp.com/collection/lesson/" + this.cart[i], {
-                    method: "PUT", // set the HTTP method as 'PUT'
+                    method: "PUT", // sets method as PUT for HTTP
                     headers: {
-                      "Content-Type": "application/json", // set the data type as JSON
+                      "Content-Type": "application/json", //set data type as JSON
                     },
-                    body: JSON.stringify(updateSpaces), // need to stringify the JSON object
+                    body: JSON.stringify(updateSpaces), //stringify the JSON object
                   });
                 }
               }
