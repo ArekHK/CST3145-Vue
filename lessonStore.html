@@ -116,6 +116,12 @@
             if(lesson.spaces > 0){
               lesson.spaces -= 1
               this.cart.push(lesson._id) //pushes id to the cart
+
+              for(let i = 0; i < this.lesson.length; i++){
+                if(lesson._id === this.lesson[i]._id){
+                  this.lesson[i].spaces = lesson.spaces;
+                }
+              }
             }
           },
           searchItem(){
@@ -162,7 +168,7 @@
               for(let y = 0; y < this.lesson.length; y++){
                 if(this.cart[i] === this.lesson[y]._id){
                   console.log("MATCH " + y + this.lesson[y].topic)
-                  updateSpaces = { "spaces": (this.lesson[y].spaces - 1) };
+                  updateSpaces = { "spaces": (this.lesson[y].spaces) };
                   fetch("https://cst3145-node-server.herokuapp.com/collection/lesson/" + this.cart[i], {
                     method: "PUT", // sets method as PUT for HTTP
                     headers: {
@@ -176,8 +182,9 @@
             
             alert("Thank you for your purchase :)");
             this.cart = [];
+            this.searchLetter = '';
 
-            fetch('https://cst3145-node-server.herokuapp.com/search/collection/lesson').then(
+            fetch('https://cst3145-node-server.herokuapp.com/collection/lesson/').then(
               function (response) {
                 response.json().then(
                   function (json) {
@@ -230,6 +237,16 @@
 
             if(this.searchLetter != ''){ //checks if the user has entered search information.
               data = this.searchLessons
+
+              for (let i = 0; i < this.searchLessons.length; i++) {
+                for(let y = 0; y < this.lesson.length; y++){
+                  if(this.searchLessons[i]._id === this.lesson[y]._id){
+                    console.log("MATCH LESSONS " + y + this.lesson[y].topic)
+                    this.searchLessons[i].spaces = this.lesson[y].spaces
+                    console.log(this.searchLessons[i].spaces);
+                  }
+                }
+              }
             }
             
             //sort the array based on the attribute selected
