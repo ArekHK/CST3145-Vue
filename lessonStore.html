@@ -150,7 +150,37 @@
             }
           },
           placeOrder(){
-            const order = {name: this.order.firstName, phoneNumber: this.order.phoneNo, lessonID: this.cart, orderedSpaces: this.cart.length};
+            let subjectSpace = [];
+            let uniqueIDs = [];
+
+            //stack the same lesson and increment count of it within one order
+            this.cart.forEach(function(cartItem,cartIndex){
+              app.lesson.forEach(function(lessonItem,lessonIndex){
+                if(cartItem === lessonItem._id && uniqueIDs.includes(cartItem) == false ){
+                  let temp = lessonItem.topic + "-" + lessonItem.location
+                  subjectSpace.push({Lesson: temp,Ordered: 0})
+                  uniqueIDs.push(cartItem);
+                }
+              });
+            });
+
+            this.cart.forEach(function(cartItem,cartIndex){
+              app.lesson.forEach(function(lessonItem,lessonIndex){
+                if(cartItem === lessonItem._id){
+                  let temp = lessonItem.topic + "-" + lessonItem.location
+                  for(let i = 0; i < subjectSpace.length; i++){
+                    if(temp == subjectSpace[i].Lesson){
+                      subjectSpace[i].Ordered +=1;
+                    }
+                  }
+                }
+              });
+            });
+
+            console.log(subjectSpace);
+            console.log(uniqueIDs);
+
+            const order = {name: this.order.firstName, phoneNumber: this.order.phoneNo, lessonID: uniqueIDs, orderedSpaces: subjectSpace};
 
             fetch('https://cst3145-node-server.herokuapp.com/collection/order', { 
               method: 'POST',
@@ -167,7 +197,6 @@
             for (let i = 0; i < this.cart.length; i++) {
               for(let y = 0; y < this.lesson.length; y++){
                 if(this.cart[i] === this.lesson[y]._id){
-                  console.log("MATCH " + y + this.lesson[y].topic)
                   updateSpaces = { "spaces": (this.lesson[y].spaces) };
                   fetch("https://cst3145-node-server.herokuapp.com/collection/lesson/" + this.cart[i], {
                     method: "PUT", // sets method as PUT for HTTP
